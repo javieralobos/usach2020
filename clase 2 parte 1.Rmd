@@ -1,0 +1,173 @@
+---
+title: 'Introducción a R: Clase 2, parte 1'
+author: "Javiera Lobos"
+output:
+  html_document:
+    df_print: paged
+---
+
+## R y R Studio: ¿Qué, cómo y por qué?
+
+### ¿Qué  es R, R Studio y por qué esta ganando tanta popularidad?
+- R  es un software de codigo abierto, y R studio es su IDE, es decir, una interfaz para ocupar R de manera más amigable. El hecho que sea abierto es la primera razón por la cual se esta masificando mucho en las ciencias sociales, sin embargo, uno de los fuertes de este software es la programacion literada, la  facilidad para compartir resultados (reproducible research) y la visualzacion de datos.
+
+### ¿ Por qué aprender en R?
+- El lenguaje de programación en R es  uno de los mejores para estadística, análisis de datos y Machine Learning . Al usar este lenguaje podemos crear objetos, funciones y paquetes. Podemos usarlo en cualquier parte, [pues tiene una aplicación online](https://login.rstudio.cloud/login?redirect=%2Foauth%2Fauthorize%3Fredirect_uri%3Dhttps%253A%252F%252Frstudio.cloud%252Flogin%26client_id%3Drstudio-cloud%26response_type%3Dcode%26show_auth%3D0%26show_login%3D1%26show_setup%3D1&setup=True). Es independiente de la plataforma, por lo que podemos aplicarla a todos los sistemas operativos. Es gratis, por lo que cualquier persona puede instalarlo en cualquier organizacion sin comprar una licencia.
+
+- R es de código abierto. Posee 12.000+ librerías gratuitas disponibles en CRAN, es escalable y se integra con facilidad con otras plataformas.
+-  Tiene una comunidad activa que se destaca por sus contribuciones periódicas y relevantes. Por lo tanto, R se ha acelerado con el tiempo y sirve como lenguaje de cola.
+
+### ¿Qué características hacen de R tan especial ?
+- Permite documentar a medida que vas haciendo tu trabajo (Adiós combinación latex-stata)
+- Permite escribir formulas $E=m c ^2$
+- Permite escribir los gráficos estáticos e interactivos 
+```{r widgets}
+library(dplyr)
+library(dygraphs)
+dygraph(nhtemp, main = "New Haven Temperatures") %>% 
+  dyRangeSelector(dateWindow = c("1920-01-01", "1960-01-01"))
+```
+
+```{r}
+lungDeaths <- cbind(ldeaths, mdeaths, fdeaths)
+dygraph(lungDeaths, main = "Deaths from Lung Disease (UK)") %>%
+  dyOptions(colors = RColorBrewer::brewer.pal(3, "Set2"))
+```
+
+```{r}
+dygraph(nhtemp, main="New Haven Temperatures") %>%
+  dySeries(label="Temp (F)", color="black") %>%
+  dyShading(from="1920-1-1", to="1930-1-1", color="#FFE6E6") %>%
+  dyShading(from="1940-1-1", to="1950-1-1", color="#CCEBD6")
+```
+
+
+
+- Permite hacer [Dashboards](https://rmarkdown.rstudio.com/flexdashboard/examples.html)
+- Permite hacer los beamer directamente de los resultados
+
+
+### ¿Qué otras tecnologías son similares a lo de R?
+- [Git/Github](https://github.com/rstudio/webinars/tree/master/25-Notebooks) 
+- [Python](http://noticias.universia.es/ciencia-tecnologia/noticia/2017/07/19/1154393/sirve-phyton.html)
+- [Tableau](https://www.tableau.com/)
+
+## Introducción a R
+
+### Elementos básicos
+- **Librerías** : R posee diversas librerías que permiten la amplicación de sus funcionalidades básicas y se encuentra en constante renovación. Para ver una lista de todos los paquetes que se encuentran disponibles, revisar [CRAN]( https://cran.r-project.org/web/packages/available_packages_by_name.html)
+```{r}
+#install.packages("tidyverse")
+library(tidyverse)
+```
+- **Script/Markdown** 
+
+R Markdown es un formato de archivo para hacer documentos dinámicos con R. Un documento R Markdown está escrito en markdown (un formato de texto plano fácil de escribir) y contiene fragmentos de código R incrustado, como éste código. 
+
+- **Project** 
+
+Workspace para cada proyecto que tengas. 
+
+
+###Tipos de datos 
+- **logical**
+```{r}
+x <- TRUE
+class(x)
+```
+-  **Integer: Números enteros**
+```{r}
+x <- 1L
+class(x)
+```
+
+
+- **Numeric: Datos numéricos** 
+```{r}
+x <- 2.6
+class(x)
+```
+
+- **Factor: Datos categóricos**
+```{r}
+x <- factor(c("male", "female", "female", "male"))
+class(x)
+```
+
+- **Character: Texto (strings)**
+```{r}
+x <- "Hello World"
+class(x)
+```
+
+
+###Tipos de estructura
+
+- **Vector**
+Vector es la estructura de datos más común y básica en R.Son datos del mismo tipo de datos ordenados en una lista. Podemos crear un vector de la siguiente manera
+```{r}
+z<-c(1,2.5,4,8)
+```
+
+- **Matrix**
+Se caracteriza por ser bidimensional. Para definir una matriz a partir de un vector, la sintaxis es matriz (vector, nrow, ncol, byrow). Byrow define como se llena. 
+```{r}
+x<- matrix(1:20, nrow=5, ncol=4, byrow=TRUE)
+x
+```
+
+- **Array**
+Se comporta como una matriz, pero es multidimensional (más de 2). 
+
+```{r}
+x<- array(1:12, c(2,3,2))
+x
+```
+
+
+- **Dataframe**
+Formato más utilizado, permite visualizar la base de datos como un excel. 
+```{r}
+df <- data.frame(
+  type = c("A", "B", "C"),
+  NC   = c(100,122,130),
+  SC   = c(200,220,250),
+  NY   = c(300,320, 380))
+```
+
+LLamamos un elemento 
+```{r}
+df[1,2]
+```
+
+Llamamos un columna completa
+```{r}
+df[,2]
+df$SC
+```
+
+Llamamos una fila completa
+```{r}
+df[1,]
+```
+
+Llamamos un intervalo completo 
+```{r}
+df[,2:4]
+```
+
+
+
+##Abrir una base de datos
+
+R permite abrir archivos de Stata, cvs, excel, SAS, SPSS, ETC. 
+
+- read.csv : for comma separated values with period as decimal separator.
+- read.csv2 : for semicolon separated values with comma as decimal separator.
+- read.delim: tab-delimited files with period as decimal separator.
+- read.delim2: tab-delimited files with comma as decimal separator.
+
+
+Bibliografía de hoy:
+[An Introduction to R](https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf)
+[Techincal Analysis with R](https://bookdown.org/kochiuyu/Technical-Analysis-with-R/functions.html)
