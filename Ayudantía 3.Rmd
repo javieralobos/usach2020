@@ -1,0 +1,84 @@
+---
+title: "Ayudantía 3"
+author: "Javiera Lobos"
+date: "24/7/2019"
+output: html_document
+---
+#Tarea 2 
+
+
+## Parte 2
+```{r}
+rendimiento_2017 <- read_delim("rendimiento/20180213_Rendimiento_2017_20180131_PUBL.csv",  ";", escape_double = FALSE, trim_ws = TRUE)
+
+rendimiento_2018 <- read_delim("rendimiento/20190220_Rendimiento_2018_20190131_PUBL.csv", 
+    ";", escape_double = FALSE, trim_ws = TRUE)
+```
+
+
+```{r}
+library(dplyr)
+rendimiento_2018<-rendimiento_2018 %>% select(rbd2018=RBD, prom2018=PROM_GRAL, asis2018=ASISTENCIA, sit2018=SIT_FIN, MRUN )
+
+length(unique(rendimiento_2018$MRUN))
+
+
+rendimiento_2017 <-rendimiento_2017 %>%  select(rbd, cod_reg_rbd, nom_com_rbd, cod_depe2, rural_rbd, let_cur, cod_jor,cod_tip_cur, MRUN=mrun, gen_alu, edad=edad_alu, prom_gral, asistencia, sit_fin) %>% mutate(mujer= ifelse( gen_alu==2 ,1,0))
+
+length(unique(rendimiento_2017$MRUN))
+
+
+
+```
+
+Pego la base de datos
+```{r}
+consolidado<-merge(rendimiento_2017, rendimiento_2018, by="MRUN", all.x = TRUE)
+
+#Hago el indicador mat2018
+consolidado<-consolidado %>% mutate(mat2018= ifelse( is.na(rbd2018)  & is.na(prom2018) & is.na(asis2018) & is.na(sit2018) ,1,0))
+
+#Boto las variables que son missings
+consolidado_completo<-consolidado[complete.cases(consolidado[ , c("rural_rbd","cod_jor", "mujer", "edad","prom_gral", "asistencia", "sit_fin", "cod_depe2")]),]
+
+consolidado_completo %>% head()
+
+```
+
+## Parte 3
+
+Debo cambiar la naturaleza de la base de datos (Revisar ejercicio de la ayudantía del domingo)
+```{r}
+str(consolidado_completo)
+consolidado_completo$cod_jor<-as.factor(consolidado_completo$cod_jor)
+consolidado_completo$sit_fin<-as.factor(consolidado_completo$sit_fin)
+consolidado_completo$cod_depe2<-as.factor(consolidado_completo$cod_depe2)
+
+#Hago el modelo
+modelo1<-lm(formula = mat2018 ~ rural_rbd + cod_jor + mujer + edad + prom_gral + 
+    asistencia + sit_fin + cod_depe2, data = consolidado_completo)
+
+summary(modelo1)
+
+#Hago la predicción
+consolidado_completo$modelo1 <-predict(modelo1, consolidado_completo, type="response")
+
+consolidado_completo<-consolidado_completo %>% mutate(modelo1v2= ifelse( modelo1>=0.5 ,1,0))
+
+#Conoaro lo que estime con la realidad
+prop.table(table(consolidado_completo$modelo1v2, consolidado_completo$mat2018),2)
+```
+
+## Parte 4
+
+```{r}
+model <- glm(formula = mat2018 ~ rural_rbd + cod_jor + mujer + edad + prom_gral + 
+    asistencia + sit_fin + cod_depe2, data = consolidado_completo, family=binomial)
+
+summary(model)
+
+#Para calcular las predicciones, creo el vector
+predict(model, consolidado_completo, type="response")
+
+```
+
