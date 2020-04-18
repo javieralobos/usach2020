@@ -4,7 +4,7 @@ author: "Javiera Lobos"
 date: "24/7/2019"
 output: html_document
 ---
-#Tarea 2 
+#Tarea 2 uai
 
 
 ## Parte 2
