@@ -1,0 +1,2 @@
+define(["require","exports","tslib","react","dig-components/typography"],(function(e,s,a,r,t){"use strict";Object.defineProperty(s,"__esModule",{value:!0}),r=a.__importStar(r),s.Message=function(e){var s=e.className,i=void 0===s?"":s,n=e.children,c=a.__rest(e,["className","children"]),l="dig-Snackbar-message "+i;return r.createElement(t.Text,Object.assign({inverse:!0,className:l},c),n)},s.Message.displayName="Snackbar.Message"}));
+//# sourceMappingURL=message.amd.min.js-vflos1VjW.map

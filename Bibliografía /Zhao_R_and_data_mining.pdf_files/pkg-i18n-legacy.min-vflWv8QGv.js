@@ -1,0 +1,2 @@
+define("modules/core/format_html",["require","exports","react-intl","modules/core/exception"],(function(e,t,r,o){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var n=r.createIntl({messages:{},locale:"en",onError:function(e){if(e.code!==r.ReactIntlErrorCode.MISSING_TRANSLATION)return o.reportException({err:e,tags:["format_html"],severity:o.SEVERITY.CRITICAL})}});t.legacyFormatHtmlAsReact=function(e,t){return n.formatMessage({id:e,defaultMessage:e,description:"nothing"},t)}}));
+//# sourceMappingURL=pkg-i18n-legacy.min.js-vflobXZFl.map

@@ -1,0 +1,2 @@
+define(["require","exports","redux-saga","rondo/v1/index"],(function(e,t,n,r){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var u=n.effects.put,o=n.effects.putResolve;t.putResolve=function(e){return function(t){return o(e.action(t))}},t.put=function(e){return function(t){return r.isActionCreator(e)?u(e.action(t)):u(e,t)}}}));
+//# sourceMappingURL=put.min.js-vflEBXlUT.map

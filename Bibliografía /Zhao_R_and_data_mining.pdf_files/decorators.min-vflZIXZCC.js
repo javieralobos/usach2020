@@ -1,0 +1,2 @@
+define(["require","exports","tslib","external/lodash","rondo/v1/metadata","rondo/v1/metadata_reselect/types"],(function(e,t,r,a,s,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),a=r.__importStar(a),t.reselect=function(e){var t=a.isArray(e)?{inputs:e}:r.__assign({inputs:[]},e);return s.metaDecorator(n.ReselectMeta,t)}}));
+//# sourceMappingURL=decorators.min.js-vflEQZ_XG.map

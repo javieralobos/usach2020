@@ -1,0 +1,2 @@
+define("modules/clean/i18n/formatters",["require","exports","tslib","modules/core/i18n"],(function(e,t,r,n){"use strict";function s(e,t){return r.__assign(r.__assign({},n.intl),{formatMessage:function(e,r){return n.intl.formatMessage(t[e.id]||e,r)}})}Object.defineProperty(t,"__esModule",{value:!0}),t.createFormatters=s,t.dummyI18nFormatters=s(0,{})}));
+//# sourceMappingURL=pkg-icu-formatters.min.js-vfl6qBG6K.map

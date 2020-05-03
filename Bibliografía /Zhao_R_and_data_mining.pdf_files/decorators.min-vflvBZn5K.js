@@ -1,0 +1,2 @@
+define(["require","exports","rondo/v1/metadata","rondo/v1/metadata_redux_saga/types"],(function(e,a,t,r){"use strict";Object.defineProperty(a,"__esModule",{value:!0}),a.saga=t.metaDecorator(r.SagaMeta,{})}));
+//# sourceMappingURL=decorators.min.js-vflqaqApV.map

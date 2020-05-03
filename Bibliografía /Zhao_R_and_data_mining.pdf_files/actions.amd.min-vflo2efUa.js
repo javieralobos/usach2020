@@ -1,0 +1,2 @@
+define(["require","exports","tslib","react"],(function(e,t,a,i){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),i=a.__importStar(i),t.Actions=function(e){var t=e.className,s=void 0===t?"":t,c=e.children,r=a.__rest(e,["className","children"]),n="dig-Snackbar-actions "+s;return i.createElement("div",Object.assign({className:n},r),c)},t.Actions.displayName="Snackbar.Actions"}));
+//# sourceMappingURL=actions.amd.min.js-vflHX37-P.map

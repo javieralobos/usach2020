@@ -1,0 +1,2 @@
+define(["require","exports"],(function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.toPercent=function(e){return 100*e+"%"}}));
+//# sourceMappingURL=to_percent.min.js-vflg5emD3.map
