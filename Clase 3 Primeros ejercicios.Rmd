@@ -1,0 +1,262 @@
+---
+title: "Clase 3"
+output: html_notebook
+---
+
+Conceptos relevantes de la clase anterior
+========================================================
+- Paquetes o librerias
+- Markdown
+- Chunk
+- Diferencia entre R y R studio
+
+Ciclo de vida de un proyecto de ciencia de datos
+========================================================
+
+Qué es la **Ciencia de datos**? 
+
+- Es la disciplina que permite convertir datos en **conocimiento accionable**. Pero es poco disciplinada. 
+
+El Team Data Science Process (TDSP) es una metodología de ciencia de datos ágil e iteractiva para ofrecer soluciones de análisis predictivo y aplicaciones inteligentes de manera eficiente.  En la medida que las instituciones crean una metodología estandarizada para manejar procesos en equipo que incluyen el procesamiento de datos.
+
+Ciclo de vida de un proyecto de Ciencia de datos
+========================================================
+
+- Entendimiento del negocio (Business understanding)
+- Adquision de los datos y entendimiento (Data acquisition and understanding)
+- Modelamiento  (modeling)
+- Puesta en marcha (Deployment)
+- Aceptacion del usuario o cliente (Customer acceptance)
+
+Business Understanding
+========================================================
+this stage involves the identification of the business problem, the definition of the business goals and the identification of the key business variables the analysis needs to predict. The metrics that will be used to assess the success of the project are also defined in this stage. Another important step includes surveying the available data sources and understanding the kind of data that is relevant for answering the questions underlying the project goals. This analysis will help determine if data collection or additional data sources will be needed.
+Esta estapa implica la identificacion del **problema de negocios**, la definicion de los objetivos y la identificacion de las variables imrportantes para mi análisis. También abarca las métricas que serán utilizadas para medir el exito  de un proyecto. 
+La etapa también abarca la revisioEn esta etapa abarca  además la revision de los datos y el analisis de si los datos son suficientes para 
+
+**Metas** 
+
+Especificar cuáles son las variables que van a servir como las objetivo del modelo y cuáles son las métricas que se van a utilizar para evaluar el éxito del proyecto. 
+
+Identificar las fuentes de datos relevantes que el negocio tiene acceso o que necesita obtener. 
+
+
+Cómo Hacerlo
+========================================================
+
+- Definir Objetivos: Trabajar con los clientes (internos o externos) para identificar qué es lo que quieren mejorar con el proceso de datos. Asimismo, identificar el proceso en el cual está inserto, las áreas que estan afectadas y los intereses de cada uno. 
+- Realizar las preguntas correctas: 
+
+Cuánto? (Regresión). 
+Qué categoría? (Clasificación). 
+Qué grupo? (Clustering).
+Hay algo extraño? (Detección anomalías)
+  
+  
+Definir los criterios de éxito
+========================================================
+
+Los criterios de éxito deben ser SMART:
+
+- Especificos (Specific)
+- Measurable
+- Achievable
+- Relevant
+- Time Bound
+
+
+Data Aquisition and Understanding
+========================================================
+Dado que los datos son el componente principal de los proyectos de ciencia de datos, el segundo paso requiere el uso intensivo de los datos. En este escenario, tengo que realizar todas las preguntas relativas  a los datos que tengo, los que me faltan y los que podrían complementar mi pregunta. El principal objetivo es entender los datos, encontrar inconsistencias para que posibles errores de tipificacion no se propagen en mi modelo. 
+
+El objetivo de es explorar los datos, preprocesarlos y limpiarlos. Existen otras preguntas que deben ser atentidas:
+
+- Cuántos datos tengo?
+- Cuál es la calidad de mis datos?
+- Cuál es la severidad de mis datos faltantes?
+- Cómo se distribuyen mis datos?
+- Necesito transformar mis variables?
+- Son mis datos suficientes para la pregunta que quiero resolver?
+
+
+
+Data Aquisition and Understanding
+========================================================
+Además implica el proceso de importación de datos al software escogido. 
+
+```{r}
+library(readr)
+titanic <- read_csv("~/Desktop/USACH/clase 2/titanic.csv")
+```
+
+Datos que contiene la base titanic:
+
+Survived : nominal - indica si la persona sobrevivió o no. 
+Pclass : ordinal - indica la clase
+Sex : nominal - indica el sexo de la persona
+Age : Numeric - indica la edad
+SibSP : Numeric - indica el número de hermanos o esposos abordo con el pasajero. 
+Parch : Numeric - indica el número de padres abordo
+Ticket : nominal - indica el número de ticket del pasajero
+Fare : Numeric - el monto de dinero que pagó el pasajero
+Cabin : nominal - el número de cabina
+Embarked : nominal - indica el puerto donde se embarco. 
+
+
+ Tipos de datos
+========================================================
+Principalmente, usaremos 3 tipos de datos:
+
++ as.numeric : Datos numericos.
++ as.factor : Datos categóricos.
++ as.character: Strings
+
+Otros que existen son:
+
++ as.logical: Datos logical
++ as.ordered: Datos ordinales
+
+A veces la lectura de las variables puede no ser correcto, por lo que tenemos que adaptarlo.
+
+```{r}
+str(titanic)
+summary(titanic)
+#Hacemos los cambios correspondientes
+titanic$Pclass<-as.factor(titanic$Pclass)
+titanic$Sex<-as.factor(titanic$Sex)
+titanic$Age<-as.numeric(titanic$Age)
+titanic$Fare<-as.numeric(titanic$Fare)
+titanic$Survived<-as.numeric(titanic$Survived)
+
+```
+
+
+Paquete dplyr
+========================================================
+El paquete dplyr fue desarrollado por Hadley Wickham de RStudio y es un versión optimizada de su paquete plyr. El paquete dplyr no proporciona ninguna nueva funcionalidad a R per se, en el sentido que todo aquello que podemos hacer con dplyr lo podríamos hacer con la sintaxis básica de R.
+
+Una importante contribución del paquete dplyr es que proporciona una "gramática" (particularmente verbos) para la manipulación y operaciones con data frames.
+
+[Fuente: Programación en R](https://rsanchezs.gitbooks.io/rprogramming/content/chapter9/dplyr.html)
+
+Se caracteriza por el signo %>% (pioe)
+
+```{r}
+#install.packages("dplyr")
+library(dplyr)
+```
+En general, los comandos que más se utilizan son: 
+ 
++ filter() para seleccionar valores basados en condiciones
++ arrange() para reordenar la base 
++ select() para seleccionar variables en base a los nombres
++ mutate() para agregar a nuevas variables sobre la base de otra variables
++ group_by() agrupo variables de acuerdo a algún criterio. 
++ summarise() para crear una variable sobre una agrupación
++sample_n() and sample_frac() to take random samples.
+
+Paquete dplyr: Ejemplos
+========================================================
+Calcularemos el porcentaje de sobrevivencia por sexo
+```{r}
+titanic %>% group_by(Sex) %>% summarise(mean(Survived)*100)
+```
+
+Calcularemos  el porcentaje de sobrevivencia por clase
+
+```{r}
+titanic %>% group_by(Pclass)  %>% summarise(mean(Survived)*100)
+```
+
+Calcularemos el porcentaje de sobrevivencia por clase por sexo
+```{r}
+
+```
+
+Calcularemos cuánto pagaron en promedio por clase aquellos que sobrevivieron
+```{r}
+
+```
+
+Calcularemos cuantos vienen de cada puerto 
+```{r}
+
+```
+
+Calcularemos cuantos vienen por cada puerto por sexo
+```{r}
+
+```
+
+Exploración de los datos 
+========================================================
+
+La exploración de los datos posee los siguientes los siguientes etapas: 
+- Inspección
+- Identificación de variables
+- Tratamiento de datos faltantes
+- Tratamiento de Outlier 
+- Análisis univariado y bivariado
+- Transformación de variables
+- Creación de variables
+
+
+Inspección
+========================================================
+
++ Reconocimiento y eliminación de duplicados. 
+```{r}
+titanic %>% distinct
+```
+
+
++ Revisar consistencia (Por ejemplo, niños menores de 12 años no tienen salario.)
+
+
+
+Missing Values
+========================================================
+No existen reglas rígidas sobre qué hacer en caso que las variables. En general, debo plantearme ciertas preguntas  importantes:
+- Por qué tengo datos faltantes?
+
+Los errores sobre la recolección de datos pueden ser principalmente de 3 tipos:
++ Missing at random
++ Missing dependiendo de valores no observados
++ Missing dependiendo del mismo valor
+
+Qué se puede hacer con los missing entonces?
+========================================================
+En general, las alternativas para tratar las observaciones faltantes, solo son válidas cuando la atrición de la base de datos es aleatoria. 
+
++ Eliminación:  Puedo borrar toda las variables que tengan alguna observacion, sin embargo, reduce el pedir predictivo de la muestra. Otra forma es eliminar esa observación en particular, sin embargo, existe el problema que tengo diferentes tamaños para cada variable.
+
++ Imputación: Se puede imputar la media, mediana o la moda a las observaciones faltantes. Existen dos tipos de datos posibles: Imputación generalizada o imputación por casos similares. 
+
++ Predicción: Crear un modelo predictivo para estimar los valores que van a sustituitr los datos. En general, este procedimiento consta de separar la base de datos en dos, una que no contiene datos faltantes y otra que si lo tiene. 
+
+Reconocimiento de Missings
+========================================================
+
+```{r}
+summary(titanic)
+```
+
+Reconocimiento de Missings
+========================================================
+
+```{r}
+#Identifico las variables que tienen NA
+colSums(is.na(titanic))
+
+#Hago estadistica con eso
+#sum(titanic$Age)
+#median(titanic$Age)
+#mean(titanic$Age)
+
+#Tengo que agregar na.rm para que los calculos ocurran adecuadamente
+#sum(titanic$Age, na.rm = TRUE)
+#mean(titanic$Age, na.rm = TRUE)
+#median(titanic$Age, na.rm = TRUE)
+#max(titanic$Age, na.rm = TRUE)
+```
+
