@@ -1,0 +1,391 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+### Ejercicio práctico 2:  Analisis de Base de datos sin conocer
+
+```{r}
+#Importamos la base de datos
+```
+
+Cuántas observaciones hay por lealtad?
+```{r}
+
+```
+
+Cuántas observaciones hay por lealtad y genero?
+```{r}
+
+```
+
+Cuántos casas existen en la base de datos?
+```{r}
+
+```
+
+Existen varitas que se repitan? cuáles?
+```{r}
+
+```
+
+Existen variables con missings?
+```{r}
+
+```
+
+Existen variables outliers?
+```{r}
+
+```
+
+
+
+
+### Etapas de Team Data Science Process
+1. **Business understanding:** 
+* Formular las objetivos (SMART).
+* Identificar las fuentes de datos relevantes.
+* Realizar las preguntas correctas. 
+2. **Data acquisition and understanding:** Exploración de la base de datos.  
+- Inspección: Revisar la base de datos: Cantidad de observaciones, filas, columnas. 
+- Identificación de variables: Reconocimiento e importación correcta de la base de datos (técnicamente correcta). Estadística descriptiva
+- Tratamiento de datos faltantes. Reconocimiento de las fuentes de las bases de datos (Random, valores no observados, censura) y tratamiento (Eliminación, imputación o predicción)
+- Tratamiento de Outliers: Generar sesgos y aumentan las variaciones
+- Creación y  Transformación de variables.
+- Análisis univariado y bivariado.
+3. **Modeling**
+4. **Deployment**
+5. **Customer acceptance**
+
+------------------------------------------------------------
+
+Clase 5: Creación de variables, Análisis Univariado, Multivariado, creación de funciones y estructuras de control
+
+```{r}
+titanic <- read_csv("~/Desktop/USACH/s1 2020/Ejemplos clase 1/titanic.csv")
+```
+
+## Creación de variables
+El comando mutate sirve para crear nuevas variables.
+
+Crearemos una variable para identificar a las personas que están viajando solas
+```{r alternativa 1}
+library(dplyr)
+#Primero creamos una variable para saber con cuantas personas esta viajando
+titanic$Numfamiliares <- titanic$SibSp + titanic$Parch
+#Ahora crearemos las variables 
+titanic<-titanic %>% mutate(viaja_solo=ifelse(Numfamiliares>0,0,1))
+```
+
+```{r alternativa 2}
+titanic=titanic %>%  mutate(viaja_solo=ifelse(SibSp + Parch>0,0,1))
+
+titanic=titanic %>%  mutate(viaja_solo=ifelse(SibSp + Parch==0,1,0))
+
+```
+
+```{r}
+titanic<-titanic  %>% mutate(viaja_solo2=ifelse(SibSp==0 & Parch==0,1,0 ))
+```
+
+
+Cuál es la tasa de sobrevivencia de las personas que viajan solas?
+```{r}
+titanic %>% group_by(viaja_solo) %>% summarise(mean(Survived)*100)
+```
+
+Cuál es la tasa de sobrevivencia de las personas que viajan sola por sexo? y por clase?
+```{r}
+titanic %>% filter(viaja_solo==1) %>%  group_by(Sex, Pclass) %>% summarise(mean(Survived)*100)
+```
+
+Cuál es el promedio de la edad de las personas que viajan solas?
+```{r}
+titanic %>%  group_by(viaja_solo) %>%  summarise(mean(Age,na.rm = TRUE)) %>%  filter(viaja_solo==1)
+
+```
+
+
+
+## Creación de variables: Intervalos
+```{r}
+titanic<- titanic %>% mutate(intervalo_edad= case_when(is.na(Age) ~ "Faltante",
+                                           Age > 0 & Age < 13 ~ "Niño",
+                                           Age > 12 & Age < 20 ~ "Adolescente",
+                                           Age > 19 & Age < 36 ~ "Adulto Joven",
+                                           Age > 35 & Age < 56  ~  "Mediana Edad",
+                                           TRUE ~ "Adulto Mayor"))
+
+titanic$intervalo_edad<- as.factor(titanic$intervalo_edad)
+```
+
+
+```{r}
+titanic %>% group_by(intervalo_edad) %>%  summarise(total=n())
+```
+
+### Creación de etiquetas
+```{r}
+titanic$Embarked  <- factor(titanic$Embarked ,
+levels = c("C","Q","S"),
+labels = c("Cherbourg", "Queensland", "Southhampton"))
+```
+
+
+
+
+## Análisis univariado
+
+La principal herramienta de analisis univariado es un histograma
+```{r}
+#install.packages('DataExplorer') 
+library(DataExplorer)
+plot_histogram(titanic$Age)
+plot_histogram(titanic$Fare)
+plot_histogram(titanic$Numfamiliares)
+
+
+```
+
+
+## Análisis bivariado
+
+- Correlación
+
+```{r}
+#install.packages("ggplot2")
+#install.packages("GGally")
+library(ggplot2)
+library(GGally)
+ggpairs(titanic %>% select(-Name, -Ticket, - Cabin, -embarked))
+```
+
+
+## Creación de funciones
+
+Las funciones tienen las siguiente entructura: 
+
+function.name <- function(arguments) 
+{
+  computations on the arguments
+  some other code
+}
+
+myFirstFun<-function(n)
+{
+  # Compute the square of integer `n`
+  n*n   
+}
+
+```{r}
+myFirstFun<-function(n)
+{
+  # Compute the square of integer `n`
+  n*n   
+}
+```
+
+
+```{r}
+sum.of.squares <- function(x,y) {
+  x^2 + y^2
+}
+sum.of.squares(2,3)
+```
+
+```{r}
+
+addPercent <- function(x){
+ percent <- round(x * 100, digits = 1)
+ result <- paste(percent, "%")
+ return(result)
+}
+
+addPercent(5)
+```
+
+
+## Familia Apply
+
+Realiza una misma funcion a todas las variables de una base de datos
+
+```{r}
+my.matrx <- as.data.frame(matrix(c(1:10, 11:20, 21:30), nrow = 10, ncol = 3))
+my.matrx
+
+
+sapply(my.matrx, mean) 
+sapply(my.matrx, sum)
+```
+
+
+```{r}
+sapply(my.matrx, function (x)  x*2)
+```
+
+
+## Estructura de Control
+Las estructuras de control en R le permiten controlar el flujo de ejecución de una serie de expresiones R. Básicamente, las estructuras de control le permiten poner algo de "lógica" en su código R, en lugar de simplemente ejecutar siempre el mismo código R cada vez. Las estructuras de control le permiten responder a entradas o características de los datos y ejecutar diferentes expresiones R en consecuencia.
+
+### if else
+La combinación if-else es probablemente la estructura de control más utilizada en R (o quizás en cualquier lenguaje). Esta estructura le permite probar una condición y actuar en función de si es verdadera o falsa.
+
+Primer Caso: La condicion realiza una accion cuando es verdad y otra cuando es falso
+
+```{r}
+if(<condition>) {
+        ## do something
+} 
+else {
+        ## do something else
+}
+```
+
+Ejemplo
+
+```{r}
+quantity <-  25
+# Set the is-else statement
+if (quantity > 20) {
+    print('You sold a lot!')
+} else {
+    print('Not enough for today')  
+}
+```
+
+
+Segundo caso: Existen diversas condiciones
+
+```{r}
+if(<condition1>) {
+        ## do something
+} else if(<condition2>)  {
+        ## do something different
+} else {
+        ## do something different
+}
+
+```
+
+Ejemplo
+
+```{r}
+quantity <-  10
+# Create multiple condition statement
+if (quantity <20) {
+      print('Not enough for today')
+} else if (quantity > 20  &quantity <= 30) {
+     print('Average day')
+} else {
+      print('What a great day!')
+}
+```
+
+### Loops: For.
+
+Su objetivo es ejecutar un loop una cantidad  fija de veces.
+
+Primer Caso: "For" simple
+```{r}
+for (variable in secuencia) { 
+"expresion"
+}
+```
+Ejemplo
+
+```{r}
+for(i in 1:10) {
+         print(i)
+ }
+```
+
+
+```{r}
+ x <- c("a", "b", "c", "d")
+ 
+ for(i in 1:4) {
+         ## Print out each element of 'x'
+         print(x[i])  
+ }
+```
+
+Segundo caso: "For"" anidado
+
+Los loops anidados son comúnmente necesarios para estructuras de datos multidimensionales o jerárquicas (por ejemplo, matrices, listas). Sin embargo, ten cuidado con la anidación. Anidar más allá de 2 a 3 niveles a menudo dificulta la lectura / comprensión del código
+```{r}
+x <- matrix(1:6, 2, 3)
+
+for(i in seq_len(nrow(x))) {
+        for(j in seq_len(ncol(x))) {
+                print(x[i, j])
+        }   
+}
+```
+
+### Loops: While.
+Su objetivo es ejecutar un loop cuando se cumpla una condición.Mientras que los bucles comienzan probando una condición. Si es cierto, ejecutan el cuerpo del bucle. Una vez que se ejecuta el cuerpo del bucle, la condición se prueba nuevamente, y así sucesivamente, hasta que la condición sea falsa, después de lo cual se cierra el bucle.
+
+```{r}
+while (condition) {
+    expression
+}
+```
+Ejemplo
+
+```{r}
+ count <- 0
+ while(count < 10) {
+         print(count)
+         count <- count + 1
+ }
+```
+
+
+Hay ciertas situaciones donde no voy a querer que el loop realize todas las iteraciones. En esos casos, me sirve realizar un Break o Next Statement. 
+
+### Break statement.
+Es una forma de salida de la rutina. 
+```{r}
+number <- 1:10
+
+for (val in number)  {
+  if (val == 7)  {
+    print(paste("El loop terminara en el valor =  ", val))
+    break
+  }
+  print(paste("El valor es :  ", val))
+}
+```
+
+Ejemplo 2
+
+```{r}
+number <- 10
+
+while (number > 0)  {
+  if (number == 3)  {
+    print(paste("Coming out from While loop Where number =  ", number))
+    break
+  }
+  print(paste("Values are :  ", number))
+  number = number - 1
+}
+```
+
+
+### Next statement.
+
+Permite seguir la interccion pero saltanto algun elemento sin terminarlo. 
+
+```{r}
+x <- 1:5
+for (val in x) {
+if (val == 3){
+next
+}
+print(val)
+}
+```
+
+[clase de hoy](https://bookdown.org/rdpeng/rprogdatascience/regular-expressions.html#grep)

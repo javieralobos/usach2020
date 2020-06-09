@@ -1,0 +1,193 @@
+ ---
+title: ' Clase 8: Introducción a ggplot  ' 
+output:
+  html_document:
+    df_print: paged
+---
+
+https://www.r-graph-gallery.com
+
+```{r}
+#install.packages("ggthemes")
+library(ggplot2)
+library(gganimate)
+library(ggplot2)
+library(gapminder)
+library(ggthemes)
+library(plotly)
+head(gapminder)
+```
+## Primera Parte: Inspección de la Base de datos
+
+
+```{r}
+head(gapminder)
+dim(gapminder)
+```
+
+
+
+```{r}
+str(gapminder)
+```
+
+```{r}
+summary(gapminder)
+```
+
+
+## Análisis Gráfico exploratorio
+
+Histograma
+```{r}
+library(dplyr)
+gapminder %>% ggplot(aes(x = lifeExp))
+```
+```{r}
+ gapminder %>% ggplot( aes(x = lifeExp)) +   geom_histogram()
+```
+
+Tarea: Hacer el histograma del gdpPercap per capita en vez de la esperanza de vida. 
+```{r}
+gapminder %>% ggplot(aes(x=gdpPercap)) +   geom_histogram()
+
+```
+
+Calculemos la experanza de vida promedio por continente 
+```{r}
+gapminder %>% group_by(continent) %>%  summarise(promedio=mean(lifeExp))
+```
+
+Ahora, haremos un gráfico sobre eso mismo
+```{r}
+gapminder %>% group_by(continent) %>%  summarise(promedio=mean(lifeExp)) %>% ggplot(aes(x=continent, y=promedio)) + geom_bar(stat='identity')
+
+```
+
+Ahora le vamos agregar diferentes 
+
+```{r}
+gapminder %>% group_by(continent) %>%  summarise(promedio=mean(lifeExp)) %>% ggplot(aes(x=continent, y=promedio)) + geom_bar(stat='identity') + ggtitle("Esperanza de vida por Continente")
+```
+Ahore le agregamos 
+
+```{r}
+gapminder %>% group_by(continent) %>%  summarise(promedio=mean(lifeExp)) %>% ggplot(aes(x=continent, y=promedio)) + geom_bar(stat='identity') + ggtitle("Esperanza de vida por Continente" ) + theme_bw()
+```
+
+Tarea: Gráfico de barras de la poblcion promedio por continente
+
+```{r}
+gapminder %>% group_by(continent) %>% summarise(promedio=mean(pop)) %>% ggplot(aes(x=continent, y=promedio)) + geom_bar(stat = 'identity')  + theme_bw() 
+```
+
+```{r}
+gapminder %>% group_by(continent) %>%  summarise(promedio=mean(lifeExp)) %>% ggplot(aes(x=continent, y=promedio)) + geom_bar(stat='identity') + ggtitle("Esperanza de vida por Continente" ) + 
+theme_economist() + scale_colour_economist() 
+```
+```{r}
+gapminder %>% group_by(continent) %>%  summarise(promedio=mean(lifeExp)) %>% ggplot(aes(x=continent, y=promedio, fill=continent)) + geom_bar(stat='identity') + ggtitle("Esperanza de vida por Continente" )  + theme_clean()
+```
+
+
+
+Podemos hacer tambien un grafico de puntos, pero solo del año 2007
+
+```{r}
+gapminder %>%  filter(year==2007) %>%  ggplot(aes(x=gdpPercap, y=lifeExp)) +
+  geom_point()
+```
+
+```{r}
+gapminder %>%  filter(year==2007) %>%  ggplot(aes(x=gdpPercap, y=lifeExp)) +
+  geom_point(aes(size=pop))
+```
+```{r}
+gapminder %>%  filter(year==2007) %>%  ggplot(aes(x=gdpPercap, y=lifeExp)) +
+  geom_point(aes(size=pop, color=continent))
+```
+```{r}
+gapminder %>%  filter(year==2007) %>%  ggplot(aes(x=gdpPercap, y=lifeExp)) +
+  geom_point(aes(size=pop, color=continent)) + 
+  ggtitle('Relación entre esperanza de vida y GDP per capita') +
+  xlab('GDP per capita ($/año)') +
+  ylab('Esperanza de vida (años)') + theme_bw()
+```
+
+```{r}
+library(plotly)
+
+ggplotly(gapminder %>%  filter(year==2007) %>%  ggplot(aes(x=gdpPercap, y=lifeExp)) +
+  geom_point(aes(size=pop, color=continent)) + 
+  ggtitle('Relación entre esperanza de vida y GDP per capita') +
+  xlab('GDP per capita ($/año)') +
+  ylab('Esperanza de vida (años)') + theme_bw())
+```
+
+```{r}
+ggplotly(gapminder %>%  filter(year==2007) %>%  ggplot(aes(x=gdpPercap, y=lifeExp)) +
+  geom_point(aes(size=pop, color=country)) + 
+  ggtitle('Relación entre esperanza de vida y GDP per capita') +
+  xlab('GDP per capita ($/año)') +
+  ylab('Esperanza de vida (años)'))
+```
+
+
+
+```{r}
+ggplot(
+  gapminder, 
+  aes(x = gdpPercap, y=lifeExp, size = pop, colour = country)
+  ) +
+  geom_point(show.legend = FALSE, alpha = 0.7) +
+  scale_color_viridis_d() +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  labs(x = "GDP per capita", y = "Life expectancy")
+
+```
+
+
+```{r}
+ggplot(
+  gapminder, 
+  aes(x = gdpPercap, y=lifeExp, size = pop, colour = country)
+  ) +
+  geom_point(show.legend = FALSE, alpha = 0.7) +
+  scale_color_viridis_d() +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  labs(x = "GDP per capita", y = "Life expectancy") + transition_time(year) +
+  labs(title = "Year: {frame_time}")
+```
+
+
+```{r}
+ggplotly(ggplot(
+  gapminder, 
+  aes(x = gdpPercap, y=lifeExp, size = pop, colour = country)
+  ) +
+  geom_point(show.legend = FALSE, alpha = 0.7) +
+  scale_color_viridis_d() +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  labs(x = "GDP per capita", y = "Life expectancy") )
+```
+```{r}
+ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
+  geom_point(alpha = 0.7, show.legend = FALSE) +
+  scale_colour_manual(values = country_colors) +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  facet_wrap(~continent) +
+  # Here comes the gganimate specific bits
+  labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
+  transition_time(year) +
+  ease_aes('linear')
+```
+
+
+
+
+
+https://rkabacoff.github.io/datavis/Customizing.html

@@ -1,0 +1,294 @@
+---
+title: "Clase 6: Continuación Clase 5"
+output: html_notebook
+---
+
+### Revisión Ejercicio práctico 2:  Analisis de Base de datos sin conocer
+
+```{r}
+library(dplyr)
+library(readr)
+harry_potter<- read_delim("Clase 4/Characters.csv", ";", escape_double = FALSE, locale = locale(encoding = "WINDOWS-1252"), 
+trim_ws = TRUE)
+```
+
+Cuántas observaciones hay por lealtad?
+```{r}
+harry_potter %>%  group_by(Loyalty)  %>% summarise(Total=n()) %>%  arrange(-Total)
+```
+
+Cuántas observaciones hay por lealtad y genero?
+```{r}
+harry_potter %>%  group_by(Loyalty, Gender)  %>% summarise(Total=n()) %>%  arrange(-Total)
+
+```
+
+Cuántos casas existen en la base de datos?
+```{r}
+harry_potter %>%  group_by(House, Gender)  %>% summarise(Total=n()) %>%  arrange(-Total)
+
+```
+
+Existen varitas que se repitan? cuáles?
+```{r}
+harry_potter %>%  group_by(Wand)  %>% summarise(Total=n()) %>%  filter(Total>1)
+
+```
+
+Existen variables con missings?
+```{r}
+colSums(is.na(harry_potter))
+```
+
+Existen variables outliers?
+```{r}
+#No Aplica
+
+```
+
+
+## Creación de funciones
+
+Las funciones tienen las siguiente entructura: 
+
+nombre.funcion <- function(argumentos) 
+{
+ #Pongo lo que hace la función
+}
+
+
+```{r}
+cuadrado_numero<-function(n)
+{
+  # Compute the square of integer `n`
+  n*n   
+}
+
+cuadrado_numero(5)
+cuadrado_numero(16)
+```
+
+
+```{r}
+suma_cuadrados <- function(x,y) {
+  x^2 + y^2
+}
+suma_cuadrados(2,3)
+```
+
+```{r}
+
+agregar_percentaje<- function(x){
+ percent <- round(x * 100, digits = 1)
+ result <- paste(percent, "%")
+ return(result)
+}
+
+agregar_percentaje(0.8)
+```
+
+#Ejercicios Prácticos
+## Crear una función que entrega el numero más uno
+```{r}
+mas_uno<-function(x) {x+1}
+
+mas_uno(7)
+```
+
+## Crear una función que multiplique los dos números que input, y al resultado, le sume 2. 
+```{r}
+mesa<-function(x,y) {x *y +2 }
+mesa(2,3)
+```
+
+
+## Familia Apply
+
+Realiza una misma funcion a todas las variables de una base de datos
+
+```{r}
+#Creamos una base de datos aleatoria
+my.matrx <- as.data.frame(matrix(c(1:10, 11:20, 21:30), nrow = 10, ncol = 3))
+my.matrx
+
+#Caculo el promedio de todos las filas
+sapply(my.matrx, mean) 
+#Calculo la suma de todas las comunas
+sapply(my.matrx, sum)
+```
+
+
+Puedo combinar ambas estructuras: Qué hace la siguiente línea de código. 
+```{r}
+sapply(my.matrx, function (x)  x*2)
+```
+
+
+## Estructura de Control
+Las estructuras de control en R le permiten controlar el flujo de ejecución de una serie de expresiones R. Básicamente, las estructuras de control le permiten poner algo de "lógica" en su código R, en lugar de simplemente ejecutar siempre el mismo código R cada vez. Las estructuras de control le permiten responder a entradas o características de los datos y ejecutar diferentes expresiones R en consecuencia.
+
+### if else
+La combinación if-else es probablemente la estructura de control más utilizada en R (o quizás en cualquier lenguaje). Esta estructura le permite probar una condición y actuar en función de si es verdadera o falsa.
+
+Primer Caso: La condicion realiza una accion cuando es verdad y otra cuando es falso
+
+```{r}
+if(<condicion>) {
+        ## Haz Algo si se cumple la condicion
+} 
+else {
+        # Sino, haz otra cosa
+}
+```
+
+Ejemplo
+
+```{r}
+quantity <-  19
+# Set the is-else statement
+if (quantity > 20) {
+    print('You sold a lot!')
+} else {
+    print('Not enough for today')  
+}
+```
+
+
+Segundo caso: Existen diversas condiciones
+
+```{r}
+if(<condition1>) {
+        ## do something
+} else if(<condition2>)  {
+        ## do something different
+} else {
+        ## do something different
+}
+
+```
+
+Ejemplo
+
+```{r}
+quantity <-  50
+# Create multiple condition statement
+if (quantity <20) {
+      print('Not enough for today')
+} else if (quantity > 20  &quantity <= 30) {
+     print('Average day')
+} else {
+      print('What a great day!')
+}
+```
+
+
+### Loops: For.
+
+Su objetivo es ejecutar un loop una cantidad  fija de veces.
+
+Primer Caso: "For" simple
+```{r}
+for (variable in secuencia) { 
+"expresion"
+}
+```
+Ejemplo
+
+```{r}
+for(i in 1:10) {
+         print(i)
+ }
+```
+
+
+```{r}
+ x <- c("a", "b", "c", "d")
+ 
+ for(i in 1:4) {
+         ## Print out each element of 'x'
+         print(x[i])  
+ }
+```
+
+Segundo caso: "For"" anidado
+
+Los loops anidados son comúnmente necesarios para estructuras de datos multidimensionales o jerárquicas (por ejemplo, matrices, listas). Sin embargo, ten cuidado con la anidación. Anidar más allá de 2 a 3 niveles a menudo dificulta la lectura / comprensión del código
+```{r}
+x <- matrix(1:6, 2, 3)
+
+for(i in 1:2) {
+        for(j in 1:3) {
+                print(x[i, j])
+        }   
+}
+```
+
+### Loops: While.
+Su objetivo es ejecutar un loop cuando se cumpla una condición.Mientras que los bucles comienzan probando una condición. Si es cierto, ejecutan el cuerpo del bucle. Una vez que se ejecuta el cuerpo del bucle, la condición se prueba nuevamente, y así sucesivamente, hasta que la condición sea falsa, después de lo cual se cierra el bucle.
+
+```{r}
+while (condition) {
+    expression
+}
+```
+Ejemplo
+
+```{r}
+ count <- 0
+ while(count < 10) {
+         print(count)
+         count <- count + 1
+ }
+```
+
+
+Hay ciertas situaciones donde no voy a querer que el loop realize todas las iteraciones. En esos casos, me sirve realizar un Break o Next Statement. 
+
+### Break statement.
+Es una forma de salida de la rutina. 
+```{r}
+number <- 1:10
+
+for (val in number)  {
+  if (val == 7)  {
+    print(paste("El loop terminara en el valor =  ", val))
+    break
+  }
+  print(paste("El valor es :  ", val))
+}
+```
+
+Ejemplo 2
+
+```{r}
+number <- 10
+
+while (number > 0)  {
+  if (number == 3)  {
+    print(paste("Coming out from While loop Where number =  ", number))
+    break
+  }
+  print(paste("Values are :  ", number))
+  number = number - 1
+}
+```
+
+
+### Next statement.
+
+Permite seguir la interccion pero saltanto algun elemento sin terminarlo. 
+
+```{r}
+x <- 1:5
+for (val in x) {
+if (val == 3){
+next
+}
+print(val)
+}
+```
+
+[clase de hoy](https://bookdown.org/rdpeng/rprogdatascience/regular-expressions.html#grep)
+
+
+

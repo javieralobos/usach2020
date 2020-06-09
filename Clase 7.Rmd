@@ -1,0 +1,172 @@
+---
+title: "Clase 7"
+output: html_notebook
+---
+
+# Ejercicios de Estructuras de control
+
+[Material de apoyo](https://rsanchezs.gitbooks.io/ciencia-de-datos-con-r/estructuras_control/iterativas/estructuras_iterativas.html)
+
+## Ejercicio 1 
+Crear una función que saque el promedio de un vector de notas 
+```{r}
+notas1<-c(3.5,3.2,3.4,3)
+
+promedio<-function(x){ mean(x)}
+promedio(notas1)
+```
+
+## Ejercicio 2
+Crear una función que de denomine "Situación Final" que saque el promedio de un vector de notas y arroje "Aprobado" cuando el promedio sea mayor a 4, y "Reprobado en caso contrario"
+```{r}
+situacion_final<-function(x){
+  promedio<-mean(x)
+  if(promedio>=4){print("Aprobado")}
+  else {print("Reprobado")}
+}
+
+situacion_final(notas1)
+```
+
+##Ejercicio 2
+Probar la funcion situacion_final con el vector notas2. Qué habría que cambiar?
+```{r}
+notas2<-c(6.5,3.2,5.4,NA)
+situacion_final(notas2)
+
+situacion_final<-function(x){
+  promedio<-mean(x,na.rm = TRUE)
+  if(promedio>=4){print("Aprobado")}
+  else {print("Reprobado")}
+}
+
+notas3<-c(6.5,3.2,5.4,NA, "AA")
+
+situacion_final(notas3)
+```
+El proceso de investigar el motivo por el cual una función no arroja el resultado adecuado, se llama Debugging. Este termino hace referencia a la  búsqueda de errores en la programación. Ante esto, lo mejor es buscar apoyo en internet. 
+
+
+
+# Introducción a la visualización
+
+
+1. **Para qué me sirven los gráficos?**
+
+En general, los gráficos serán útiles en dos momentos:
+
+* Para hacer análisis exploratorio de los datos. 
+* Para comunicar ideas. 
+
+
+2. **Cuándo es un buen gráfico?**
+
+Los gráficos deben ser parsimónicos, autexplicativos y minimalistas, pues su principal objetivo es que se pueda entender en poco tiempo.  En general, todos los graficos en R deben:
+
+- Tener el fondo blanco.
+- Tener título.
+- Tener los nombres y las escalas en las coordenadas.
+- Tener la bibliografía.
+- Tener una paleta de colores definida. 
+- Tener una escala apropiada.
+
+Ejemplos de malos gráficos: 
+
+- [link 1](https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&ved=2ahUKEwj4wuHexOXkAhV_E7kGHQWYDs8QjRx6BAgBEAQ&url=https%3A%2F%2Fwww.adnradio.cl%2Fnoticias%2Fpolitica%2Fel-extrano-grafico-que-presento-sebastian-pinera-para-justificar-la-baja-de-victimizacion%2F20171106%2Fnota%2F3630063.aspx&psig=AOvVaw38HCeiTlZg3xo2ireqZVl7&ust=1569279738150947)
+
+- [link 2](https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&ved=2ahUKEwjD05n6xOXkAhW1I7kGHUTtDUkQjRx6BAgBEAQ&url=https%3A%2F%2Fwww.eldesconcierto.cl%2F2018%2F03%2F07%2Fa-lo-pinera-el-mercurio-publica-distorsionado-grafico-que-compara-gobiernos-y-perjudica-al-de-bachelet%2F&psig=AOvVaw38HCeiTlZg3xo2ireqZVl7&ust=1569279738150947)
+
+- [link 3](https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&ved=2ahUKEwihkoKgxeXkAhVrHbkGHUrICIcQjRx6BAgBEAQ&url=https%3A%2F%2Fvenngage.com%2Fblog%2Fmisleading-graphs%2F&psig=AOvVaw1aTI9uju_ey3eidO4JMYUD&ust=1569279871339683)
+
+- [link 4](https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&ved=2ahUKEwiWvNvDxeXkAhVLK7kGHYBzDVEQjRx6BAgBEAQ&url=http%3A%2F%2Fbell-wang.github.io%2Fcritique-on-graph%2F&psig=AOvVaw1aTI9uju_ey3eidO4JMYUD&ust=1569279871339683)
+
+Cada elemento del gráfico debe estar preparado y debe ser un aporte.[(Ejemplo mejora gráfico)](https://speakerdeck.com/cherdarchuk/data-looks-better-naked-pie-chart-edition)
+
+
+
+
+
+3. **Introducción a ggplot** 
+
+ggplot2 se basa en la **gramática de los gráficos** que plantea que para generar cualquier tipo de gráfico, se requieren los mismos tres componentes: Una base de datos, un sistema de coordenadas y las marcas visuales para representar los datos (geoms), por ejemplo, una línea, un área, puntos, barras, etc.
+
+```{r}
+install.packages("ggplot2")
+library(ggplot2)
+#Cargamos la base titanic
+library(readxl)
+titanic <- read_excel("Desktop/Datrics/Clientes/Corpa/Clases/S1/titanic.xlsx")
+```
+
+En general, la estructura de los datos es la siguiente: 
+ggplot(datos, aes(x=var1, y=var2)) + geom_function(mapping=aes()) + theme_function + scale_function
+
+
+3. **Gráficos Univariados** 
+* Histograma (Var. Continuas)
+```{r}
+ggplot(titanic, aes(x=Age))
+```
+
+Gráfico 1
+```{r}
+#Primero, me tengo que asegurar que edad sea numérico
+titanic$Age<-as.numeric(titanic$Age)
+#luego, hago el gráfico
+ggplot(titanic, aes(x=Age)) + geom_histogram() 
+
+#Finalmente, haré el mismo gráfico, pero le pondré el fondo blanco
+ggplot(titanic, aes(x=Age)) + geom_histogram()  + theme_bw() +ggtitle("Histograma Edad")
+```
+
+* Gráfico de Densidad (Var. Continuas)
+
+Gráfico 2
+```{r}
+ggplot(titanic, aes(x=Age)) + geom_density()  + theme_bw()
+```
+
+* Barras (Var. Discretas)
+
+Gráfico 3
+```{r}
+ggplot(titanic,aes(x=Survived)) +
+  geom_bar() + theme_bw() + 
+  labs(y = "Conteo de pasajeros", x= "Calidad de sobrevivencia",
+       title = "Tasa de sobrevivencia del Titanic")
+```
+
+
+
+Gráfico 4
+```{r}
+titanic$Sex<-as.factor(titanic$Sex)
+titanic$Pclass<-as.factor(titanic$Pclass)
+ggplot(aes(x=Survived), data=titanic) +
+  geom_bar() +
+   theme_bw() +
+    labs(y = "Conteo de pasajeros", x= "Calidad de sobrevivencia",
+       title = "Tasa de sobrevivencia del Titanic por sexo") +
+         facet_grid(~Sex)
+```
+
+Gráfico 5
+```{r}
+titanic$Survived<-as.factor(titanic$Survived)
+ggplot(titanic, aes(x = Pclass, fill = Survived)) + 
+  geom_bar() +
+     theme_bw() +
+    labs(y = "Conteo de pasajeros", x= "Calidad de sobrevivencia",
+       title = "Tasa de sobrevivencia del Titanic por clase")
+```
+
+##### Primera tarea: Recrear el gráfico 4, con el fondo blanco,  título y con nombres en los ejes para la variable Fare, y que las barras se encuentren llenas por el puerto en el que se embarcaron. 
+
+```{r}
+
+```
+
+
+
+
+

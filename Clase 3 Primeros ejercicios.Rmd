@@ -17,7 +17,7 @@ Qué es la **Ciencia de datos**?
 
 - Es la disciplina que permite convertir datos en **conocimiento accionable**. Pero es poco disciplinada. 
 
-El Team Data Science Process (TDSP) es una metodología de ciencia de datos ágil e iteractiva para ofrecer soluciones de análisis predictivo y aplicaciones inteligentes de manera eficiente.  En la medida que las instituciones crean una metodología estandarizada para manejar procesos en equipo que incluyen el procesamiento de datos.
+El Team Data Science Process (TDSP) es una metodología de ciencia de datos ágil e iteractiva para ofrecer soluciones de análisis predictivo y aplicaciones inteligentes de manera eficiente. En la medida que las instituciones crean una metodología estandarizada para manejar procesos en equipo que incluyen el procesamiento de datos.
 
 Ciclo de vida de un proyecto de Ciencia de datos
 ========================================================
@@ -30,9 +30,8 @@ Ciclo de vida de un proyecto de Ciencia de datos
 
 Business Understanding
 ========================================================
-this stage involves the identification of the business problem, the definition of the business goals and the identification of the key business variables the analysis needs to predict. The metrics that will be used to assess the success of the project are also defined in this stage. Another important step includes surveying the available data sources and understanding the kind of data that is relevant for answering the questions underlying the project goals. This analysis will help determine if data collection or additional data sources will be needed.
-Esta estapa implica la identificacion del **problema de negocios**, la definicion de los objetivos y la identificacion de las variables imrportantes para mi análisis. También abarca las métricas que serán utilizadas para medir el exito  de un proyecto. 
-La etapa también abarca la revisioEn esta etapa abarca  además la revision de los datos y el analisis de si los datos son suficientes para 
+Esta etapa implica la identificacion del **problema de negocios**, la definición de los objetivos y la identificación de las variables imrportantes para mi análisis. También abarca las métricas que serán utilizadas para medir el exito  de un proyecto. 
+En esta etapa abarca  además la revision de los datos y el análisis de si los datos son suficientes para responder mi pregunta.
 
 **Metas** 
 
@@ -58,7 +57,7 @@ Definir los criterios de éxito
 
 Los criterios de éxito deben ser SMART:
 
-- Especificos (Specific)
+- Específicos (Specific)
 - Measurable
 - Achievable
 - Relevant
@@ -124,11 +123,11 @@ summary(titanic)
 #Hacemos los cambios correspondientes
 titanic$Pclass<-as.factor(titanic$Pclass)
 titanic$Sex<-as.factor(titanic$Sex)
-titanic$Age<-as.numeric(titanic$Age)
-titanic$Fare<-as.numeric(titanic$Fare)
-titanic$Survived<-as.numeric(titanic$Survived)
-
+titanic$Cabin<-as.factor(titanic$Cabin)
+titanic$Embarked<-as.factor(titanic$Embarked)
+str(titanic)
 ```
+
 
 
 Paquete dplyr
@@ -139,7 +138,7 @@ Una importante contribución del paquete dplyr es que proporciona una "gramátic
 
 [Fuente: Programación en R](https://rsanchezs.gitbooks.io/rprogramming/content/chapter9/dplyr.html)
 
-Se caracteriza por el signo %>% (pioe)
+Se caracteriza por el signo %>% (pipe)
 
 ```{r}
 #install.packages("dplyr")
@@ -170,22 +169,27 @@ titanic %>% group_by(Pclass)  %>% summarise(mean(Survived)*100)
 
 Calcularemos el porcentaje de sobrevivencia por clase por sexo
 ```{r}
-
+titanic  %>% group_by(Pclass, Sex) %>% summarise(promedio=mean(Survived)*100)
 ```
 
 Calcularemos cuánto pagaron en promedio por clase aquellos que sobrevivieron
 ```{r}
-
+titanic %>%  filter(Survived==1) %>% group_by(Pclass) %>%  summarise(mean(Fare)) 
 ```
 
 Calcularemos cuantos vienen de cada puerto 
 ```{r}
-
+titanic %>% group_by(Embarked) %>%  summarise(total=n())
 ```
 
 Calcularemos cuantos vienen por cada puerto por sexo
 ```{r}
+titanic %>%  group_by(Embarked, Sex) %>%  summarise(Total=n())
+```
 
+Calcularemos cuantos vienen por cada puerto por sexo por clase
+```{r}
+titanic %>% group_by(Embarked, Sex, Pclass) %>% summarise(Total=n())
 ```
 
 Exploración de los datos 

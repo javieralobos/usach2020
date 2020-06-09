@@ -1,0 +1,236 @@
+---
+title: "Clase 4"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+Conceptos relevantes de la clase anterior
+========================================================
+### Definición de Data Science
+Es la disciplina que permite convertir datos en **conocimiento accionable**.
+
+### Etapas de Team Data Science Process
+1. **Entendimiento del negocio (Business understanding)** 
+* Formular las objetivos (SMART).
+* Identificar las fuentes de datos relevantes.
+* Realizar las preguntas correctas. 
+2. **Adquision de los datos y entendimiento (Data acquisition and understanding)** 
+En esta fase llevaremos a cabo la limpieza de los datos y es la fase más importante del proceso de datos. Es además aquella que requiere más atención por parte del analista, pues la máquina puede que no tenga el contexto suficiente para leer
+correctamente los datos.  
+Este proceso contempla:
+- Identificacion de variables (Duplicacio)
+- Tratamiento de variables faltantes
+- Tratamiento de outliers
+- Analisis univariado
+- Analisis Bivariado
+- Transformación de variables
+- Creación de variables
+ 
+3. **Modelamiento  (modeling)**
+4. **Puesta en marcha (Deployment)**
+5. **Aceptacion del usuario o cliente (Customer acceptance)**
+
+
+Clase 4: Missings, Outliers, creación y transformación de variables 
+========================================================
+
+
+Identificación de la consistencia  de las variables
+========================================================
+
+- Identificación de la variable objetivo
+- Revisar si las variables se encuentran duplicadas
+- Problemas de tipeo
+- Revisar consistencia de las variables
+- Revisar coherencia de las clasificaciones
+
+Missing Values
+========================================================
+
+Por qué es importante?
+Datos faltantes pueden reducir el ajuste de mi modelo o pueden tener sesgos porque no estamos analizando de manera correcta el comportamiento de las variables, es decir, estamos dejando  asociaciones afuera que pueden llevar a una mala predicción o clasificación.
+
+No existen reglas rígidas sobre qué hacer en caso que las variables. En general, debo plantearme ciertas preguntas  importantes:
+- Por qué tengo datos faltantes?
+- Como afectan a mis resultados?
+
+Los errores sobre la recolección de datos pueden ser principalmente de 3 tipos:
++ Missing at random
++ Missing dependiendo de valores no observados
++ Missing dependiendo del mismo valor
+
+Qué se puede hacer con los missing entonces?
+========================================================
+En general, las alternativas para tratar las observaciones faltantes, solo son válidas cuando la atrición de la base de datos es aleatoria. 
+
++ Eliminación:  Puedo borrar toda las variables que tengan alguna observacion, sin embargo, reduce el pedir predictivo de la muestra. Otra forma es eliminar esa observación en particular  para cada columna en particular, sin embargo, existe el problema que tengo diferentes tamaños para cada variable.  
+
++ Imputación: Se puede imputar la media, mediana o la moda a las observaciones faltantes. Existen dos tipos de datos posibles: Imputación generalizada o imputación por casos similares. 
+
++ Predicción: Crear un modelo predictivo para estimar los valores que van a sustituitr los datos. En general, este procedimiento consta de separar la base de datos en dos, una que no contiene datos faltantes y otra que si lo tiene. 
+
+Reconocimiento de Missings
+========================================================
+
+```{r}
+str(titanic)
+titanic$Pclass<-as.factor(titanic$Pclass)
+titanic$Sex<-as.factor(titanic$Sex)
+titanic$Cabin<-as.factor(titanic$Cabin)
+titanic$Embarked<-as.factor(titanic$Embarked)
+
+summary(titanic)
+#Identifico las variables que tienen NA
+colSums(is.na(titanic))
+```
+
+Trabajo con los missings en R
+```{r}
+#Hago estadistica con eso
+sum(titanic$Age)
+median(titanic$Age)
+mean(titanic$Age)
+
+#Tengo que agregar na.rm para que los calculos ocurran adecuadamente
+sum(titanic$Age, na.rm = TRUE)
+mean(titanic$Age, na.rm = TRUE)
+median(titanic$Age, na.rm = TRUE)
+max(titanic$Age, na.rm = TRUE)
+```
+
+
+##Outliers
+Un outlier es una observación que diverge del resto de de la distribución de la variable. En general, pueden haber dos tipos outliers: Univariados y multivariados. 
+
+Existen diferentes fuentes de una variable outlier:
+
+- Problemas en la digitalización de los datos/ Procesamiento de los datos
+- Error de medida: Es la causa más común
+- Outlier natural
+
+
+Los impactos de los outliers son los siguientes:
+
+- Aumenta la varianza y disminuye el poder estadístico de los test
+- Dismimuye la normalidad de los datos
+- Pueden sesgar las estimaciones
+
+1. Detectar un outlier Univariado
+Una forma de detectar lo outliers es por medio de un boxplot. Es un gráfico que muestra la distribución de una variable, la mediana, el quartil 25 y 75 y un rango de 1.5 RIQ. 
+
+```{r}
+library(dplyr)
+titanic_numeric<-select_if(titanic, is.numeric)
+boxplot(titanic_numeric)
+
+#Voy a eliminar el numero de pasajeros
+titanic_numeric<-titanic_numeric %>% select(-PassengerId)
+boxplot(titanic_numeric)
+#Veré solo el outlier de age
+boxplot(titanic_numeric$Age)
+boxplot(titanic_numeric$Fare)
+boxplot(titanic_numeric$SibSp)
+boxplot(titanic_numeric$Parch)
+
+
+```
+
+2. Outlier Bivariado
+Ejemplo práctico:Pondremos artificialmente outliers en una base de datos precargada. 
+```{r}
+# Agregamos los outliers en los datos
+cars1 <- cars[1:30, ]  # original data
+cars_outliers <- data.frame(speed=c(19,19,20,20,20), dist=c(190, 186, 210, 220, 218))  # Generamos un vector de los datos
+cars2 <- rbind(cars1, cars_outliers) # Pegamos outliers a los datos
+
+# Hacemos un grafico con los datos con outliers
+par(mfrow=c(1, 2))
+plot(cars2$speed, cars2$dist, xlim=c(0, 28), ylim=c(0, 230), main="Con Outliers", xlab="speed", ylab="dist", pch="*", col="red", cex=2)
+abline(lm(dist ~ speed, data=cars2), col="blue", lwd=3, lty=2)
+```
+
+```{r}
+# Datos originales sin outliers
+plot(cars1$speed, cars1$dist, xlim=c(0, 28), ylim=c(0, 230), main="Sin outliers", xlab="speed", ylab="dist", pch="*", col="red", cex=2)
+abline(lm(dist ~ speed, data=cars1), col="blue", lwd=3, lty=2)
+```
+ [link](https://datascienceplus.com/outlier-detection-and-treatment-with-r/)
+ 
+¿Qué hacer con los outliers?
+
+- Trimming: Se elimina los outliers
+- Imputación: Reemplazar los valores reales por valores esperados
+- Capping: Reemplazar el valor por el maximo valor de la distribución (1.5 RIQ) 
+- Predicción: Generar un modelo que impute al outlier un valor de acuerdo a sus características
+
+
+### Ejercicio práctico 1:  Queremos ver cómo cambia la caracterización de los sobrevivientes en cuanto a la edad según el tipo de imputación. 
+
+
+### Rerefencia: Bases sin hacer ningun tipo de cambio
+
+```{r}
+titanic %>%  group_by(Survived) %>%  summarise(Mean_age=mean(Age,na.rm = TRUE), Total=n())
+```
+
+
+
+### Todas las observaciones que tengan algún missings y eliminar los outliers
+Dado esto, que nos parece eliminar las variables?
+
+```{r}
+titanic_sinna <- titanic[complete.cases(titanic), ] 
+titanic_sinna %>%  group_by(Survived) %>%  summarise(Mean_age=mean(Age,na.rm = TRUE), Total=n())
+```
+
+
+# Imputacion a la media
+```{r}
+titanic_imputado_media<-titanic
+titanic_imputado_media$Age[is.na(titanic_imputado_media$Age)] <- mean(titanic_imputado_media$Age, na.rm = TRUE)
+titanic_imputado_media %>%  group_by(Survived) %>%  summarise(Mean_age=mean(Age), Total=n())
+```
+
+La media parece ser un buen predictor, sin embargo, que cambió?
+```{r}
+hist(titanic$Age, xlab='Age', main="Antes de la imputación")
+hist(titanic_sinna$Age, xlab='Age', main="Eliminación NA")
+hist(titanic_imputado_media$Age, xlab='Age', main="Imputación a la media")
+```
+
+### Ejercicio práctico 2:  Analisis de Base de datos sin conocer
+
+```{r}
+#Importamos la base de datos
+```
+
+Cuántas observaciones hay por lealtad?
+```{r}
+
+```
+
+Cuántas observaciones hay por lealtad y genero?
+```{r}
+
+```
+
+Cuántos casas existen en la base de datos?
+```{r}
+
+```
+
+Existen varitas que se repitan? cuáles?
+```{r}
+
+```
+
+Existen variables con missings?
+```{r}
+
+```
+
+Existen variables outliers?
+```{r}
+
+```
